@@ -28,7 +28,9 @@ export default async function handler(
 
   const redis = Redis.fromEnv()
 
-  await redis.set(id, link)
+  await redis.set(id, link, {
+    ex: 60 * 60 * 24 * 7 // 7 days
+  })
 
   return res.status(200).json({ name: id })
 }
