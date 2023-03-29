@@ -25,7 +25,8 @@ export default function Home() {
         link
       })
     }).then(res => res.json()).then(data => {
-      console.log(data)
+      setLink(`https://next-link-shortener-psi.vercel.app/api/redirect/${data.name}`)
+      setDescription('Link shortened successfully, will be deleted after 7 days')
     })
   }
 
