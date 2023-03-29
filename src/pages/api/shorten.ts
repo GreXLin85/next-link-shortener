@@ -14,12 +14,21 @@ export default async function handler(
     return res.status(405).json({ name: 'Method Not Allowed' })
   }
 
-  const redis = Redis.fromEnv()
+  const { link } = req.body
 
-  const { url } = req.body
+  if (link.length > 2048) {
+    return res.status(400).json({ name: 'Link too long' })
+  }
+
+  if (!new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/g).test(link)) {
+    return res.status(400).json({ name: 'Invalid link' })
+  }
 
   const id = Math.random().toString(36).slice(2)
-  await redis.set(id, url)
+
+  const redis = Redis.fromEnv()
+
+  await redis.set(id, link)
 
   return res.status(200).json({ name: id })
 }

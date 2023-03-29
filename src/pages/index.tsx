@@ -1,8 +1,34 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
+import { useState } from 'react'
 
 export default function Home() {
+  const [link, setLink] = useState<string>('')
+  const [description, setDescription] = useState<string>('A simple link shortener')
+
+  function shortenLink() {
+    if (link.length > 2048) {
+      return setDescription('Link is too long')
+    }
+
+    if (!new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/g).test(link)) {
+      return setDescription("Invalid link")
+    }
+
+    fetch('/api/shorten', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        link
+      })
+    }).then(res => res.json()).then(data => {
+      console.log(data)
+    })
+  }
+
   return (
     <>
       <Head>
@@ -16,10 +42,12 @@ export default function Home() {
       }>
         <span>
           <p className={styles.title}>Link Shortener</p>
-          <p className={styles.description}>A simple link shortener</p>
+          <p className={styles.description}>{description}</p>
         </span>
-        <input className={styles.input} type="text" placeholder="Paste your link here" />
-        <button className={styles.button}>Shorten</button>
+        <input className={styles.input} value={link} onChange={(e) => {
+          setLink(e.target.value)
+        }} type="text" placeholder="Paste your link here" />
+        <button className={styles.button} onClick={() => shortenLink()}>Shorten</button>
       </main>
     </>
   )
