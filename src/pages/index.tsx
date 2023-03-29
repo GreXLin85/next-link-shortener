@@ -1,13 +1,16 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 export default function Home() {
   const [link, setLink] = useState<string>('')
   const [description, setDescription] = useState<string>('A simple link shortener')
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false)
+  const inputReference = useRef(null);
 
   function shortenLink() {
+    setIsButtonDisabled(true)
     if (link.length > 2048) {
       return setDescription('Link is too long')
     }
@@ -26,7 +29,12 @@ export default function Home() {
       })
     }).then(res => res.json()).then(data => {
       setLink(`https://next-link-shortener-psi.vercel.app/api/redirect/${data.name}`)
-      setDescription('Link shortened successfully, will be deleted after 7 days')
+      setDescription('Link shortened successfully, will be deleted after 7 days');
+      (inputReference?.current as any).select()
+      setIsButtonDisabled(false)
+    }).catch(err => {
+      setDescription('An error occured, please try again')
+      setIsButtonDisabled(false)
     })
   }
 
@@ -47,8 +55,8 @@ export default function Home() {
         </span>
         <input className={styles.input} value={link} onChange={(e) => {
           setLink(e.target.value)
-        }} type="text" placeholder="Paste your link here" />
-        <button className={styles.button} onClick={() => shortenLink()}>Shorten</button>
+        }} ref={inputReference} type="text" placeholder="Paste your link here" />
+        <button className={styles.button} disabled={isButtonDisabled} onClick={() => shortenLink()}>Shorten</button>
       </main>
     </>
   )
