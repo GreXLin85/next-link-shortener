@@ -22,6 +22,8 @@ export default function Home() {
     }
 
     if (link.includes('next-link-shortener-psi.vercel.app')) {
+    setIsButtonDisabled(false)
+    setButtonText('Shorten')
       return setDescription('You can\'t shorten a shortened link')
     }
 
