@@ -21,6 +21,10 @@ export default function Home() {
       return setDescription("Invalid link")
     }
 
+    if (link.includes('next-link-shortener-psi.vercel.app')) {
+      return setDescription('You can\'t shorten a shortened link')
+    }
+
     fetch('/api/shorten', {
       method: 'POST',
       headers: {
