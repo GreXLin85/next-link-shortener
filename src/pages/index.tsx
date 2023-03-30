@@ -6,10 +6,12 @@ import { useRef, useState } from 'react'
 export default function Home() {
   const [link, setLink] = useState<string>('')
   const [description, setDescription] = useState<string>('A simple link shortener')
+  const [buttonText, setButtonText] = useState<string>('Shorten')
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false)
   const inputReference = useRef(null);
 
   function shortenLink() {
+    setButtonText('Shortening...')
     setIsButtonDisabled(true)
     if (link.length > 2048) {
       return setDescription('Link is too long')
@@ -32,9 +34,11 @@ export default function Home() {
       setDescription('Link shortened successfully, will be deleted after 7 days');
       (inputReference?.current as any).select()
       setIsButtonDisabled(false)
+      setButtonText('Shorten')
     }).catch(err => {
       setDescription('An error occured, please try again')
       setIsButtonDisabled(false)
+      setButtonText('Shorten')
     })
   }
 
@@ -56,7 +60,7 @@ export default function Home() {
         <input className={styles.input} value={link} onChange={(e) => {
           setLink(e.target.value)
         }} ref={inputReference} type="text" placeholder="Paste your link here" />
-        <button className={styles.button} disabled={isButtonDisabled} onClick={() => shortenLink()}>Shorten</button>
+        <button className={styles.button} disabled={isButtonDisabled} onClick={() => shortenLink()}>{buttonText}</button>
       </main>
     </>
   )
